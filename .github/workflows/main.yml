@@ -1,0 +1,33 @@
+name: Pipeline DevOps
+
+# 1. Se ejecuta cada vez que hagan un push (Disparador)
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  analisis-calidad:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Clonar el código del repositorio en el servidor virtual
+    - name: Copiar repositorio
+      uses: actions/checkout@v4
+
+    # Configurar el entorno de ejecución
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # 2. Instalar las dependencias necesarias
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    # 3. Ejecutar una prueba de "Linter" (Filtro de calidad)
+    - name: Ejecutar Linter (Flake8)
+      run: |
+        # Este comando busca errores de sintaxis críticos de Python
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
